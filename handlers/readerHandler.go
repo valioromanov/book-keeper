@@ -2,8 +2,9 @@ package handlers
 
 import (
 	"book-keeper/service"
-	"database/sql"
 	"net/http"
+
+	"github.com/jackc/pgx/v4"
 )
 
 type ReaderHandlers struct {
@@ -21,6 +22,6 @@ func (rh *ReaderHandlers) GetAllReaders(w http.ResponseWriter, r *http.Request) 
 
 }
 
-func NewReaderHandler(dbClient *sql.DB) ReaderHandlers {
+func NewReaderHandler(dbClient *pgx.Conn) ReaderHandlers {
 	return ReaderHandlers{service: service.NewReaderService(dbClient)}
 }

@@ -1,21 +1,26 @@
 package model
 
 import (
-	"database/sql"
+	"context"
+
+	"github.com/jackc/pgx/v4"
 )
 
 type ReaderRepositoryDb struct {
-	client *sql.DB
+	client *pgx.Conn
 }
 
 func (r ReaderRepositoryDb) FindAll() ([]Reader, error) {
 	allReadersSql := "select * from reader"
 	var reader Reader
 	readers := make([]Reader, 0)
-	rows, err := r.client.Query(allReadersSql)
+	rows, err := r.client.Query(context.Background(), allReadersSql)
 	if err != nil {
 		return nil, err
 	}
+	// rows.Next automatically calls rows.Close()
+	// but to be sure we can close it again
+	defer rows.Close()
 	for rows.Next() {
 		err = rows.Scan(&reader.Id,
 			&reader.FirstName,
@@ -31,6 +36,6 @@ func (r ReaderRepositoryDb) FindAll() ([]Reader, error) {
 	return readers, nil
 }
 
-func NewReaderRepositoryDb(dbClient *sql.DB) ReaderRepositoryDb {
+func NewReaderRepositoryDb(dbClient *pgx.Conn) ReaderRepositoryDb {
 	return ReaderRepositoryDb{client: dbClient}
 }

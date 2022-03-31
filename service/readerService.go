@@ -2,7 +2,8 @@ package service
 
 import (
 	"book-keeper/model"
-	"database/sql"
+
+	"github.com/jackc/pgx/v4"
 )
 
 type ReaderService struct {
@@ -17,6 +18,6 @@ func (rs ReaderService) GetAllReaders() ([]model.Reader, error) {
 	return rs.repo.FindAll()
 }
 
-func NewReaderService(dbClient *sql.DB) ReaderService {
+func NewReaderService(dbClient *pgx.Conn) ReaderService {
 	return ReaderService{model.NewReaderRepositoryDb(dbClient)}
 }
