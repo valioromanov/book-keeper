@@ -10,6 +10,7 @@ type ReaderRepositoryDb struct {
 	client *pgx.Conn
 }
 
+//function that make a query for getting all readers
 func (r ReaderRepositoryDb) FindAll() ([]Reader, error) {
 	allReadersSql := "select * from reader"
 	var reader Reader
