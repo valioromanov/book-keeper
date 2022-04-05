@@ -60,6 +60,12 @@ func (r *ReaderRepositoryDb) FindById(id string) (*Reader, *errs.AppError) {
 }
 
 func (r *ReaderRepositoryDb) InsertNewReader(read Reader) (*Reader, *errs.AppError) {
+
+	readerCheck, _ := r.FindByIdentNo(read.IdentNo)
+	if readerCheck != nil {
+		return nil, errs.NewUnexceptedError("This reader exists!")
+	}
+
 	insertNewReaderQuery := "insert into reader(first_name, last_name, ident_no, registration_date, status) values ($1,$2,$3,$4,$5) returning id"
 	tx, err := r.client.Begin(context.Background())
 	if err != nil {
@@ -86,6 +92,26 @@ func (r *ReaderRepositoryDb) InsertNewReader(read Reader) (*Reader, *errs.AppErr
 	}
 
 	reader := Reader{Id: int64(lastInsteredId)}
+
+	return &reader, nil
+}
+
+func (r *ReaderRepositoryDb) FindByIdentNo(identNo string) (*Reader, *errs.AppError) {
+	readerByIdentNo := "select * from reader where ident_no=$1"
+	var reader Reader
+
+	err := r.client.QueryRow(context.Background(), readerByIdentNo, identNo).Scan(&reader.Id,
+		&reader.FirstName,
+		&reader.LastName,
+		&reader.IdentNo,
+		&reader.RegDate,
+		&reader.Status)
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, errs.NewNotFoundError("Not found reader with identNo: " + identNo)
+		}
+		return nil, errs.NewUnexceptedError(err.Error())
+	}
 
 	return &reader, nil
 }

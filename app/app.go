@@ -22,6 +22,9 @@ func Start() {
 	router.
 		HandleFunc("/readers/{id}", rh.GetReaderById).
 		Methods(http.MethodGet)
+	router.
+		HandleFunc("/readers/new", rh.NewReader).
+		Methods(http.MethodPost)
 
 	log.Fatal(http.ListenAndServe("localhost:8080", router))
 }

@@ -16,6 +16,7 @@ type Reader struct {
 }
 type ReaderRepository interface {
 	FindAll() ([]Reader, *errs.AppError)
-	FindById() (*Reader, *errs.AppError)
-	InsertNewReader() (*Reader, *errs.AppError)
+	FindById(string) (*Reader, *errs.AppError)
+	InsertNewReader(Reader) (*Reader, *errs.AppError)
+	FindByIdentNo(string) (*Reader, *errs.AppError)
 }

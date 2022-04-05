@@ -44,10 +44,24 @@ func (rh *ReaderHandlers) NewReader(w http.ResponseWriter, r *http.Request) {
 	var reqNewReader dto.NewReaderRequest
 
 	err := json.NewDecoder(r.Body).Decode(&reqNewReader)
+
 	if err != nil {
 		WriteResponse(w, http.StatusBadRequest, err.Error())
 		return
 	}
+
+	if errReq := reqNewReader.ValidateNewReaderRequest(); errReq != nil {
+		WriteResponse(w, errReq.Code, errReq)
+		return
+	}
+	reader, errReq := rh.service.RegisterReader(reqNewReader)
+
+	if errReq != nil {
+		WriteResponse(w, errReq.Code, errReq)
+	} else {
+		WriteResponse(w, http.StatusOK, reader)
+	}
+
 }
 
 func NewReaderHandler(dbClient *pgx.Conn) ReaderHandlers {

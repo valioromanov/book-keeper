@@ -1,5 +1,5 @@
 package dto
 
 type NewReaderResponse struct {
-	NewReaderId int
+	NewReaderId int `json:"newReaderId"`
 }

@@ -14,8 +14,9 @@ type ReaderService struct {
 
 type ReaderServiceInterface interface {
 	GetAllReaders() ([]model.Reader, *errs.AppError)
-	GetReaderById(id string) (*model.Reader, *errs.AppError)
-	RegisterReader(nr dto.NewReaderRequest) (*dto.NewReaderResponse, *errs.AppError)
+	GetReaderById(string) (*model.Reader, *errs.AppError)
+	RegisterReader(dto.NewReaderRequest) (*dto.NewReaderResponse, *errs.AppError)
+	GetReaderByIdentNo(string) (*model.Reader, *errs.AppError)
 }
 
 func (rs *ReaderService) GetAllReaders() ([]model.Reader, *errs.AppError) {
@@ -37,6 +38,10 @@ func (rs *ReaderService) RegisterReader(nr dto.NewReaderRequest) (*dto.NewReader
 
 	return &dto.NewReaderResponse{NewReaderId: int(dbResp.Id)}, nil
 
+}
+
+func (rs *ReaderService) GetReaderByIdentNo(identNo string) (*model.Reader, *errs.AppError) {
+	return rs.repo.FindByIdentNo(identNo)
 }
 
 func NewReaderService(dbClient *pgx.Conn) ReaderService {
